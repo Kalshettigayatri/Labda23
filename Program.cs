@@ -1,26 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 class Person
 {
     public string Name { get; set; }
     public string PhoneNumber { get; set; }
-
-    public override bool Equals(object obj)
-    {
-        if (obj == null || GetType() != obj.GetType())
-        {
-            return false;
-        }
-
-        Person otherPerson = (Person)obj;
-        return Name.Equals(otherPerson.Name, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public override int GetHashCode()
-    {
-        return Name.ToLower().GetHashCode();
-    }
+    public string City { get; set; }
+    public string State { get; set; }
 }
 
 class AddressBook
@@ -29,20 +16,17 @@ class AddressBook
 
     public void AddPerson(Person person)
     {
-        if (!contacts.Contains(person))
-        {
-            contacts.Add(person);
-            Console.WriteLine($"Added {person.Name} to the address book.");
-        }
-        else
-        {
-            Console.WriteLine($"{person.Name} is already in the address book.");
-        }
+        contacts.Add(person);
     }
 
-    public Person SearchPersonByName(string name)
+    public List<Person> SearchPersonsByCity(string city)
     {
-        return contacts.Find(person => person.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return contacts.Where(person => person.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    public List<Person> SearchPersonsByState(string state)
+    {
+        return contacts.Where(person => person.State.Equals(state, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 }
 
@@ -50,24 +34,28 @@ class Program
 {
     static void Main(string[] args)
     {
-        AddressBook addressBook = new AddressBook();
+        AddressBook addressBook1 = new AddressBook();
+        AddressBook addressBook2 = new AddressBook();
 
-        Person person1 = new Person { Name = "John", PhoneNumber = "123-456-7890" };
-        Person person2 = new Person { Name = "Alice", PhoneNumber = "987-654-3210" };
-        Person person3 = new Person { Name = "John", PhoneNumber = "555-123-4567" }; // Duplicate
+        // Adding persons to AddressBooks
+        addressBook1.AddPerson(new Person { Name = "John", City = "New York", State = "New York" });
+        addressBook1.AddPerson(new Person { Name = "Alice", City = "Los Angeles", State = "California" });
+        addressBook2.AddPerson(new Person { Name = "Bob", City = "New York", State = "New York" });
 
-        addressBook.AddPerson(person1);
-        addressBook.AddPerson(person2);
-        addressBook.AddPerson(person3);
-
-        Person searchResult = addressBook.SearchPersonByName("john");
-        if (searchResult != null)
+        string searchCity = "New York";
+        List<Person> personsInCity = addressBook1.SearchPersonsByCity(searchCity);
+        Console.WriteLine($"Persons in {searchCity}:");
+        foreach (var person in personsInCity)
         {
-            Console.WriteLine($"Found {searchResult.Name} in the address book.");
+            Console.WriteLine($"Name: {person.Name}, City: {person.City}, State: {person.State}");
         }
-        else
+
+        string searchState = "California";
+        List<Person> personsInState = addressBook2.SearchPersonsByState(searchState);
+        Console.WriteLine($"Persons in {searchState}:");
+        foreach (var person in personsInState)
         {
-            Console.WriteLine("Person not found in the address book.");
+            Console.WriteLine($"Name: {person.Name}, City: {person.City}, State: {person.State}");
         }
     }
 }
