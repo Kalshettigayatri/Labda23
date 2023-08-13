@@ -12,21 +12,32 @@ class Person
 
 class AddressBook
 {
-    private List<Person> contacts = new List<Person>();
+    private Dictionary<string, List<Person>> personsByCity = new Dictionary<string, List<Person>>();
+    private Dictionary<string, List<Person>> personsByState = new Dictionary<string, List<Person>>();
 
     public void AddPerson(Person person)
     {
-        contacts.Add(person);
+        AddToDictionary(personsByCity, person.City, person);
+        AddToDictionary(personsByState, person.State, person);
     }
 
-    public List<Person> SearchPersonsByCity(string city)
+    private void AddToDictionary(Dictionary<string, List<Person>> dictionary, string key, Person person)
     {
-        return contacts.Where(person => person.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (!dictionary.ContainsKey(key))
+        {
+            dictionary[key] = new List<Person>();
+        }
+        dictionary[key].Add(person);
     }
 
-    public List<Person> SearchPersonsByState(string state)
+    public List<Person> GetPersonsByCity(string city)
     {
-        return contacts.Where(person => person.State.Equals(state, StringComparison.OrdinalIgnoreCase)).ToList();
+        return personsByCity.ContainsKey(city) ? personsByCity[city] : new List<Person>();
+    }
+
+    public List<Person> GetPersonsByState(string state)
+    {
+        return personsByState.ContainsKey(state) ? personsByState[state] : new List<Person>();
     }
 }
 
@@ -34,16 +45,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        AddressBook addressBook1 = new AddressBook();
-        AddressBook addressBook2 = new AddressBook();
+        AddressBook addressBook = new AddressBook();
 
-        // Adding persons to AddressBooks
-        addressBook1.AddPerson(new Person { Name = "John", City = "New York", State = "New York" });
-        addressBook1.AddPerson(new Person { Name = "Alice", City = "Los Angeles", State = "California" });
-        addressBook2.AddPerson(new Person { Name = "Bob", City = "New York", State = "New York" });
+        addressBook.AddPerson(new Person { Name = "John", City = "New York", State = "New York" });
+        addressBook.AddPerson(new Person { Name = "Alice", City = "Los Angeles", State = "California" });
+        addressBook.AddPerson(new Person { Name = "Bob", City = "New York", State = "New York" });
+        addressBook.AddPerson(new Person { Name = "Carol", City = "Los Angeles", State = "California" });
 
         string searchCity = "New York";
-        List<Person> personsInCity = addressBook1.SearchPersonsByCity(searchCity);
+        List<Person> personsInCity = addressBook.GetPersonsByCity(searchCity);
         Console.WriteLine($"Persons in {searchCity}:");
         foreach (var person in personsInCity)
         {
@@ -51,7 +61,7 @@ class Program
         }
 
         string searchState = "California";
-        List<Person> personsInState = addressBook2.SearchPersonsByState(searchState);
+        List<Person> personsInState = addressBook.GetPersonsByState(searchState);
         Console.WriteLine($"Persons in {searchState}:");
         foreach (var person in personsInState)
         {
