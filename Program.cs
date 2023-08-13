@@ -30,14 +30,14 @@ class AddressBook
         dictionary[key].Add(person);
     }
 
-    public List<Person> GetPersonsByCity(string city)
+    public int GetNumberOfPersonsByCity(string city)
     {
-        return personsByCity.ContainsKey(city) ? personsByCity[city] : new List<Person>();
+        return personsByCity.ContainsKey(city) ? personsByCity[city].Count : 0;
     }
 
-    public List<Person> GetPersonsByState(string state)
+    public int GetNumberOfPersonsByState(string state)
     {
-        return personsByState.ContainsKey(state) ? personsByState[state] : new List<Person>();
+        return personsByState.ContainsKey(state) ? personsByState[state].Count : 0;
     }
 }
 
@@ -53,19 +53,11 @@ class Program
         addressBook.AddPerson(new Person { Name = "Carol", City = "Los Angeles", State = "California" });
 
         string searchCity = "New York";
-        List<Person> personsInCity = addressBook.GetPersonsByCity(searchCity);
-        Console.WriteLine($"Persons in {searchCity}:");
-        foreach (var person in personsInCity)
-        {
-            Console.WriteLine($"Name: {person.Name}, City: {person.City}, State: {person.State}");
-        }
+        int numberOfPersonsInCity = addressBook.GetNumberOfPersonsByCity(searchCity);
+        Console.WriteLine($"Number of persons in {searchCity}: {numberOfPersonsInCity}");
 
         string searchState = "California";
-        List<Person> personsInState = addressBook.GetPersonsByState(searchState);
-        Console.WriteLine($"Persons in {searchState}:");
-        foreach (var person in personsInState)
-        {
-            Console.WriteLine($"Name: {person.Name}, City: {person.City}, State: {person.State}");
-        }
+        int numberOfPersonsInState = addressBook.GetNumberOfPersonsByState(searchState);
+        Console.WriteLine($"Number of persons in {searchState}: {numberOfPersonsInState}");
     }
 }
